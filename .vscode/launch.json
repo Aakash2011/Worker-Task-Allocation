@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Streamlit App (Debug)",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/src/ui.py",
+                "--server.port", "8501",
+                "--server.headless", "false" 
+            ],
+            "pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "jinja": true,
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}"                                         
+                                        
+        }
+    ]
+}

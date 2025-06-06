@@ -1,0 +1,77 @@
+[
+    {
+        "name": "Alice",
+        "available_skills": [
+            "Brewing",
+            "Chemistry",
+            "Fluid Dynamics",
+            "Grain Handling"
+        ]
+    },
+    {
+        "name": "Bob",
+        "available_skills": [
+            "Safety",
+            "Process Control",
+            "Mechanical",
+            "Fluid Dynamics"
+        ]
+    },
+    {
+        "name": "David",
+        "available_skills": [
+            "Grain Handling",
+            "Filtration",
+            "Chemistry",
+            "Process Control",
+            "Fluid Dynamics"
+        ]
+    },
+    {
+        "name": "Frank",
+        "available_skills": [
+            "Safety",
+            "Mechanical",
+            "Grain Handling",
+            "Fluid Dynamics",
+            "Chemistry"
+        ]
+    },
+    {
+        "name": "Grace",
+        "available_skills": [
+            "Brewing",
+            "Chemistry",
+            "Filtration",
+            "Fluid Dynamics",
+            "Grain Handling",
+            "Mechanical",
+            "Process Control",
+            "Safety"
+        ]
+    },
+    {
+        "name": "Harry",
+        "available_skills": [
+            "Mechanical",
+            "Safety",
+            "Grain Handling"
+        ]
+    },
+    {
+        "name": "Ivy",
+        "available_skills": [
+            "Brewing",
+            "Chemistry",
+            "Process Control"
+        ]
+    },
+    {
+        "name": "Henley",
+        "available_skills": [
+            "Chemistry",
+            "Grain Handling"
+        ],
+        "score": 10
+    }
+]

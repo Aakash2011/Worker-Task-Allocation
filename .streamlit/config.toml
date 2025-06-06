@@ -1,0 +1,19 @@
+# .streamlit/config.toml
+
+[theme]
+primaryColor="#00722C" # Heineken Green (darker)
+backgroundColor="#F0F2F6" # Light grey for main content
+secondaryBackgroundColor="#E0E6EB" # Slightly darker grey for sidebar/containers
+textColor="#26272B" # Dark text
+font="sans serif"
+
+[global]
+# Suppress the "Made with Streamlit" footer and header
+# If you want to remove it:
+# disableStatusBar=true
+# hideSourceCode=true
+# showLoadingAnimation=false
+
+[server]
+# Add this if you want to explicitly run on a specific port without passing args
+# port = 8501

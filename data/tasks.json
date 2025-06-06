@@ -1,0 +1,33 @@
+[
+    {
+        "name": "Malt Milling",
+        "required_skills": [
+            "Mechanical",
+            "Safety",
+            "Grain Handling"
+        ]
+    },
+    {
+        "name": "Mashing Process",
+        "required_skills": [
+            "Brewing",
+            "Chemistry",
+            "Process Control"
+        ]
+    },
+    {
+        "name": "Lautering & Sparging",
+        "required_skills": [
+            "Brewing",
+            "Filtration",
+            "Fluid Dynamics"
+        ]
+    },
+    {
+        "name": "Wort Boiling",
+        "required_skills": [
+            "Brewing",
+            "Chemistry"
+        ]
+    }
+]
