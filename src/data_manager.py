@@ -2,6 +2,7 @@ import json
 import os
 import pandas as pd
 from typing import List, Dict, Any
+import streamlit as st # Import streamlit to use st.error
 
 DATA_DIR = "data"
 TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
@@ -68,30 +69,35 @@ def _load_in_memory_data():
 def add_task(task_name: str, required_skills: List[str]):
     """Adds a new task to in-memory data and saves to file."""
     global _tasks
-    # Check for uniqueness before adding
-    if any(t["name"] == task_name for t in _tasks):
-        st.error(f"Task with name '{task_name}' already exists. Please choose a different name.")
-        return
+    # The check for uniqueness is now done in app.py before calling this function,
+    # but keeping a redundant check here for robustness in case of direct calls.
+    if any(t["name"].lower() == task_name.lower() for t in _tasks):
+        # In this specific case, the warning message is handled by app.py
+        # but for robustness, if this function were called directly,
+        # you might want to raise an error or return a status.
+        # For now, we'll assume app.py handles the primary warning.
+        return False # Indicate that task was not added due to duplicate
     _tasks.append({"name": task_name, "required_skills": required_skills})
     save_data(_tasks, TASKS_FILE)
+    return True # Indicate success
 
 # MODIFIED: add_or_update_worker - allows editing existing workers
 def add_or_update_worker(worker_name: str, available_skills: List[str], score: int = 5, original_name: str = None):
     """Adds a new worker or updates an existing worker in-memory and saves to file."""
     global _workers
+    
+    # When updating, if the name has changed, remove the old entry
     if original_name and original_name != worker_name:
-        # If original_name is provided and different, it means we are updating the name
-        # First, remove the old worker if it exists to avoid duplicates with new name
-        _workers = [w for w in _workers if w["name"] != original_name]
+        _workers = [w for w in _workers if w["name"].lower() != original_name.lower()]
 
-    # Check if a worker with the new/current name already exists
     found = False
     for worker in _workers:
-        if worker["name"] == worker_name:
+        if worker["name"].lower() == worker_name.lower(): # Case-insensitive check
             worker["available_skills"] = available_skills
             worker["score"] = score
             found = True
             break
+    
     if not found:
         _workers.append({"name": worker_name, "available_skills": available_skills, "score": score})
     
@@ -112,7 +118,7 @@ def get_workers() -> List[Dict[str, Any]]:
 def delete_worker(worker_name: str):
     """Deletes a worker from in-memory data and saves to file."""
     global _workers
-    _workers = [w for w in _workers if w["name"] != worker_name]
+    _workers = [w for w in _workers if w["name"].lower() != worker_name.lower()] # Case-insensitive delete
     save_data(_workers, WORKERS_FILE)
 
 def clear_all_data():
