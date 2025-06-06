@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 # Import the new functions from data_manager
 # IMPORTANT: Corrected the import name to reset_data_from_files
-from src.data_manager import add_task, get_tasks, add_worker, get_workers, clear_all_data, reset_data_from_files, save_data # save_data is useful for persistence
+from src.data_manager import add_task, get_tasks, add_or_update_worker, get_workers, clear_all_data, reset_data_from_files, save_data, delete_worker
 from src.optimization_model import solve_task_allocation
 
 # --- Global Page Configuration (needs to be at the very top) ---
@@ -57,7 +57,9 @@ def home_page():
 def add_task_page():
     render_main_title("Define Production Tasks", "Specify each task and the unique skills essential for its completion")
 
-    with st.form("add_task_form", clear_on_submit=True):
+    # Removed: st.session_state.editing_task initialization for tasks
+
+    with st.form("add_task_form", clear_on_submit=True): # Clear on submit
         render_section_title("New Task Details")
         col1, col2 = st.columns(2)
         with col1:
@@ -76,12 +78,14 @@ def add_task_page():
             )
 
         st.markdown("---")
-        if st.form_submit_button("Add Task to Inventory"):
+        submit_button = st.form_submit_button("Add Task to Inventory", type="primary")
+
+        if submit_button:
             if task_name and skills_input:
                 required_skills = [s.strip().title() for s in skills_input.split(',') if s.strip()]
-                add_task(task_name, required_skills)
-                # save_data is implicitly called by add_task inside data_manager
+                add_task(task_name, required_skills) # Call the original add_task
                 st.success(f"Task '{task_name}' added successfully to the system!")
+                st.rerun() # Rerun to refresh the displayed data
             else:
                 st.error("Please ensure both 'Task Name' and 'Required Skills' are filled.")
 
@@ -92,7 +96,10 @@ def add_task_page():
         df_tasks = pd.DataFrame(tasks)
         df_tasks.rename(columns={'name': 'Task Name', 'required_skills': 'Required Skills'}, inplace=True)
         df_tasks['Required Skills'] = df_tasks['Required Skills'].apply(lambda x: ', '.join(x))
-        st.dataframe(df_tasks, use_container_width=True, hide_index=True)
+        
+        # Display tasks without Edit and Delete buttons
+        st.dataframe(df_tasks[['Task Name', 'Required Skills']], use_container_width=True, hide_index=True)
+        st.markdown("---") # Add a separator after the list of tasks
     else:
         st.info("No tasks have been added yet. Use the form above to begin building your task inventory.")
 
@@ -101,6 +108,10 @@ def add_worker_page():
     render_main_title("Manage Worker Profiles", "Assign skills to workers. For consistency and accuracy, worker skills can only be chosen from the set of skills required by existing tasks")
 
     st.markdown("---")
+
+    # Initialize session state for editing if not already present
+    if 'editing_worker' not in st.session_state:
+        st.session_state.editing_worker = None
 
     tasks = get_tasks()
     all_required_skills = set()
@@ -114,12 +125,27 @@ def add_worker_page():
         st.info("Worker skills must be selected from the skills demanded by existing tasks to ensure practical applicability.")
         return
 
-    with st.form("add_worker_form", clear_on_submit=True):
-        render_section_title("New Worker Details")
+    # Pre-fill form fields if in edit mode
+    current_worker_name = ""
+    current_selected_skills = []
+    current_worker_score = 5
+    original_worker_name = None
+
+    if st.session_state.editing_worker:
+        current_worker_name = st.session_state.editing_worker['name']
+        current_selected_skills = st.session_state.editing_worker['available_skills']
+        current_worker_score = st.session_state.editing_worker['score']
+        original_worker_name = st.session_state.editing_worker['name'] # Store original name for update
+
+    with st.form("add_worker_form", clear_on_submit=False): # Do not clear on submit when editing
+        render_section_title(
+            "Edit Worker Details" if st.session_state.editing_worker else "New Worker Details"
+        )
         col1, col2 = st.columns(2)
         with col1:
             worker_name = st.text_input(
                 "Worker Name",
+                value=current_worker_name,
                 key="worker_name_input",
                 placeholder="e.g., John Doe",
                 help="Enter the name of the worker."
@@ -128,29 +154,49 @@ def add_worker_page():
             selected_skills = st.multiselect(
                 "Available Skills (Select all that apply)",
                 options=available_skills_for_selection,
+                default=current_selected_skills,
                 key="worker_skills_multiselect",
                 help="Select skills this worker possesses from the list generated from existing tasks."
             )
 
-        # NEW: Advanced settings for worker score
+        # Advanced settings for worker score
         with st.expander("Advanced Settings"):
             worker_score = st.slider(
                 "Worker Score (0 - 10)",
                 min_value=0,
                 max_value=10,
-                value=5,  # Default score
+                value=current_worker_score,
                 step=1,
                 key="worker_score_slider",
                 help="An optional score to indicate a worker's overall proficiency or preference. Higher scores might lead to tasks being assigned to them first."
             )
 
         st.markdown("---")
-        if st.form_submit_button("Add Worker to Team"):
+        col_buttons = st.columns([0.2, 0.2, 0.6]) # Adjust column widths for buttons
+        with col_buttons[0]:
+            submit_button = st.form_submit_button(
+                "Update Worker" if st.session_state.editing_worker else "Add Worker to Team",
+                type="primary"
+            )
+        with col_buttons[1]:
+            if st.session_state.editing_worker:
+                cancel_edit_button = st.form_submit_button("Cancel Edit")
+                if cancel_edit_button:
+                    st.session_state.editing_worker = None
+                    st.rerun()
+
+        if submit_button:
             if worker_name and selected_skills:
-                # MODIFIED: Pass the worker_score to add_worker
-                add_worker(worker_name, selected_skills, worker_score)
-                # save_data is implicitly called by add_worker inside data_manager
-                st.success(f"Worker '{worker_name}' added with skills: {', '.join(selected_skills)} and score: {worker_score}.")
+                if st.session_state.editing_worker:
+                    # Update existing worker
+                    add_or_update_worker(worker_name, selected_skills, worker_score, original_name=original_worker_name)
+                    st.success(f"Worker '{worker_name}' updated successfully!")
+                    st.session_state.editing_worker = None # Exit edit mode
+                else:
+                    # Add new worker
+                    add_or_update_worker(worker_name, selected_skills, worker_score)
+                    st.success(f"Worker '{worker_name}' added with skills: {', '.join(selected_skills)} and score: {worker_score}.")
+                st.rerun() # Rerun to refresh the displayed data and clear form fields
             else:
                 st.error("Please enter a worker name and select at least one skill.")
 
@@ -159,14 +205,29 @@ def add_worker_page():
     workers = get_workers()
     if workers:
         df_workers = pd.DataFrame(workers)
-        # MODIFIED: Display the 'score' column
         df_workers.rename(columns={'name': 'Worker Name', 'available_skills': 'Available Skills', 'score': 'Score'}, inplace=True)
         df_workers['Available Skills'] = df_workers['Available Skills'].apply(lambda x: ', '.join(x))
-        # Ensure 'Score' column is displayed, add it if it somehow doesn't exist for older data
-        display_columns = ['Worker Name', 'Available Skills']
-        if 'Score' in df_workers.columns:
-            display_columns.append('Score')
-        st.dataframe(df_workers[display_columns], use_container_width=True, hide_index=True)
+        
+        # Display workers with Edit and Delete buttons
+        for i, row in df_workers.iterrows():
+            cols = st.columns([0.6, 0.2, 0.2])
+            cols[0].write(f"**{row['Worker Name']}**")
+            cols[0].markdown(f"<small>Skills: {row['Available Skills']} | Score: {row['Score']}</small>", unsafe_allow_html=True)
+            
+            with cols[1]:
+                if st.button("✏️ Edit", key=f"edit_worker_{i}"):
+                    st.session_state.editing_worker = {
+                        "name": row['Worker Name'],
+                        "available_skills": row['Available Skills'].split(', '),
+                        "score": row['Score']
+                    }
+                    st.rerun()
+            with cols[2]:
+                if st.button("🗑️ Delete", key=f"delete_worker_{i}"):
+                    delete_worker(row['Worker Name'])
+                    st.success(f"Worker '{row['Worker Name']}' deleted.")
+                    st.rerun()
+        st.markdown("---") # Add a separator after the list of workers
     else:
         st.info("No worker profiles have been added yet. Use the form above to start building your workforce.")
 
@@ -195,7 +256,6 @@ def run_optimization_page():
         render_section_title("Current Workers")
         if workers:
             df_workers = pd.DataFrame(workers)
-            # MODIFIED: Display the 'Score' column here too
             df_workers.rename(columns={'name': 'Worker Name', 'available_skills': 'Available Skills', 'score': 'Score'}, inplace=True)
             df_workers['Available Skills'] = df_workers['Available Skills'].apply(lambda x: ', '.join(x))
             display_columns = ['Worker Name', 'Available Skills']
@@ -258,17 +318,21 @@ def run_optimization_page():
             st.error("Could not find an optimal solution. Please check your tasks and workers for feasibility. Ensure all required skills can be met by your available workforce.")
 
     st.markdown("---")
-    # NEW: Reset Data Button
+    # Reset Data Button
     st.info("🔄 **Reset Data:** Click the button below to revert to the dummy data'. This will overwrite any unsaved changes.")
     if st.button("🔵 Reset Data", use_container_width=True, type="secondary", help="This will clear current in-memory data and reload dummy data."):
-        reset_data_from_files() # Call the correctly named function
+        reset_data_from_files()
         st.success("Data has been reset!")
-        st.rerun() # Rerun to refresh the displayed data
+        # Clear any active edit sessions for workers
+        st.session_state.editing_worker = None
+        st.rerun()
 
     st.warning("⚠️ **Danger Zone:** Use the button below to clear all stored task and worker data.")
     if st.button("🔴 Clear All Data", use_container_width=True, type="secondary" ,help="This will permanently delete all saved tasks and workers."):
-        clear_all_data() # This now also saves empty files
+        clear_all_data()
         st.success("All task and worker data has been cleared.")
+        # Clear any active edit sessions for workers
+        st.session_state.editing_worker = None
         st.rerun()
 
 # --- Streamlit App Layout (Main Logic) ---
@@ -281,6 +345,8 @@ with st.sidebar:
     if st.button("Home", use_container_width=True, type="secondary"):
         if st.session_state.page != "Home":
             st.session_state.page = "Home"
+            # Clear edit state for workers when navigating to home
+            st.session_state.editing_worker = None
             st.rerun()
 
     st.markdown("---")
@@ -299,9 +365,10 @@ with st.sidebar:
         label_visibility="hidden"
     )
 
-
     if selected_page_from_radio and selected_page_from_radio != st.session_state.page:
         st.session_state.page = selected_page_from_radio
+        # Clear edit state for workers when navigating between main pages
+        st.session_state.editing_worker = None
         st.rerun()
 
 # --- Page Rendering based on selection ---

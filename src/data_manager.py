@@ -64,25 +64,56 @@ def _load_in_memory_data():
     _workers = load_data_from_file(WORKERS_FILE)
     print("In-memory data loaded from files.")
 
+# REVERTED: add_task - no edit functionality for tasks
 def add_task(task_name: str, required_skills: List[str]):
     """Adds a new task to in-memory data and saves to file."""
     global _tasks
+    # Check for uniqueness before adding
+    if any(t["name"] == task_name for t in _tasks):
+        st.error(f"Task with name '{task_name}' already exists. Please choose a different name.")
+        return
     _tasks.append({"name": task_name, "required_skills": required_skills})
     save_data(_tasks, TASKS_FILE)
+
+# MODIFIED: add_or_update_worker - allows editing existing workers
+def add_or_update_worker(worker_name: str, available_skills: List[str], score: int = 5, original_name: str = None):
+    """Adds a new worker or updates an existing worker in-memory and saves to file."""
+    global _workers
+    if original_name and original_name != worker_name:
+        # If original_name is provided and different, it means we are updating the name
+        # First, remove the old worker if it exists to avoid duplicates with new name
+        _workers = [w for w in _workers if w["name"] != original_name]
+
+    # Check if a worker with the new/current name already exists
+    found = False
+    for worker in _workers:
+        if worker["name"] == worker_name:
+            worker["available_skills"] = available_skills
+            worker["score"] = score
+            found = True
+            break
+    if not found:
+        _workers.append({"name": worker_name, "available_skills": available_skills, "score": score})
+    
+    save_data(_workers, WORKERS_FILE)
+
 
 def get_tasks() -> List[Dict[str, Any]]:
     """Returns all tasks currently in memory."""
     return _tasks
 
-def add_worker(worker_name: str, available_skills: List[str], score: int = 5):
-    """Adds a new worker to in-memory data and saves to file."""
-    global _workers
-    _workers.append({"name": worker_name, "available_skills": available_skills, "score": score})
-    save_data(_workers, WORKERS_FILE)
-
 def get_workers() -> List[Dict[str, Any]]:
     """Returns all workers currently in memory."""
     return _workers
+
+# REMOVED: delete_task function
+
+# KEPT: delete_worker function
+def delete_worker(worker_name: str):
+    """Deletes a worker from in-memory data and saves to file."""
+    global _workers
+    _workers = [w for w in _workers if w["name"] != worker_name]
+    save_data(_workers, WORKERS_FILE)
 
 def clear_all_data():
     """Clears all task and worker data, both in-memory and by saving empty lists to files.
@@ -113,46 +144,3 @@ if not os.path.exists(TASKS_FILE) or not os.path.exists(WORKERS_FILE) or \
 
 # Load initial data into memory from the main working files
 _load_in_memory_data()
-
-
-# Example usage (for testing data_manager.py independently)
-if __name__ == "__main__":
-    print("--- Starting data_manager.py independent test ---")
-    
-    # Ensure source dummy files exist for testing
-    _ensure_data_directory()
-    save_data([{"name": "Test Task", "required_skills": ["TestSkill"]}], SOURCE_DUMMY_TASKS_FILE)
-    save_data([{"name": "Test Worker", "available_skills": ["TestSkill"], "score": 5}], SOURCE_DUMMY_WORKERS_FILE)
-
-    # Clear and then reset to see full cycle
-    print("\nClearing all data...")
-    clear_all_data()
-    print(f"Tasks after clear: {get_tasks()}")
-    print(f"Workers after clear: {get_workers()}")
-
-    print("\nResetting data from files (should load dummy data from source_dummy_*.json)...")
-    reset_data_from_files()
-    print(f"Tasks after reset: {get_tasks()}")
-    print(f"Workers after reset: {get_workers()}")
-
-    print("\nAdding a new task and worker...")
-    add_task("New App Task", ["Testing", "Deployment"])
-    add_worker("New App Worker", ["Deployment"], 10)
-    print(f"Current tasks: {get_tasks()}")
-    print(f"Current workers: {get_workers()}")
-
-    print("\nClearing data again to see if files become empty...")
-    clear_all_data()
-    print(f"Tasks after second clear: {get_tasks()}")
-    print(f"Workers after second clear: {get_workers()}")
-
-    print("\nResetting data again (should load dummy data from source_dummy_*.json again)...")
-    reset_data_from_files()
-    print(f"Tasks after second reset: {get_tasks()}")
-    print(f"Workers after second reset: {get_workers()}")
-
-    # Clean up test files
-    os.remove(SOURCE_DUMMY_TASKS_FILE)
-    os.remove(SOURCE_DUMMY_WORKERS_FILE)
-
-    print("--- data_manager.py independent test complete ---")
