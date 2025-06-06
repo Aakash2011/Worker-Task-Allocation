@@ -107,8 +107,6 @@ def add_task_page():
 def add_worker_page():
     render_main_title("Manage Worker Profiles", "Assign skills to workers. For consistency and accuracy, worker skills can only be chosen from the set of skills required by existing tasks")
 
-    st.markdown("---")
-
     # Initialize session state for editing if not already present
     if 'editing_worker' not in st.session_state:
         st.session_state.editing_worker = None
