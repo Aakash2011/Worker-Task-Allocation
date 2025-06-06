@@ -1,33 +1,40 @@
 [
     {
-        "name": "Malt Milling",
+        "name": "Fermentation Monitoring",
         "required_skills": [
-            "Mechanical",
-            "Safety",
-            "Grain Handling"
+            "Chemistry",
+            "Quality Control",
+            "Data Analysis"
         ]
     },
     {
-        "name": "Mashing Process",
+        "name": "Bottling Line Setup",
+        "required_skills": [
+            "Mechanical",
+            "Automation",
+            "Safety Procedures"
+        ]
+    },
+    {
+        "name": "Ingredient Procurement",
+        "required_skills": [
+            "Supply Chain Management",
+            "Negotiation",
+            "Logistics"
+        ]
+    },
+    {
+        "name": "Brewing Kettle Operation",
         "required_skills": [
             "Brewing",
-            "Chemistry",
             "Process Control"
         ]
     },
     {
-        "name": "Lautering & Sparging",
+        "name": "Packaging Inspection",
         "required_skills": [
-            "Brewing",
-            "Filtration",
-            "Fluid Dynamics"
-        ]
-    },
-    {
-        "name": "Wort Boiling",
-        "required_skills": [
-            "Brewing",
-            "Chemistry"
+            "Quality Control",
+            "Attention to Detail"
         ]
     }
 ]

@@ -1,77 +1,162 @@
 [
     {
-        "name": "Alice",
+        "name": "Liam Smith",
+        "available_skills": [
+            "Process Control",
+            "Automation"
+        ],
+        "score": 5
+    },
+    {
+        "name": "Olivia Johnson",
+        "available_skills": [
+            "Negotiation",
+            "Quality Control"
+        ],
+        "score": 7
+    },
+    {
+        "name": "Noah Williams",
+        "available_skills": [
+            "Logistics",
+            "Brewing"
+        ],
+        "score": 3
+    },
+    {
+        "name": "Emma Brown",
+        "available_skills": [
+            "Chemistry",
+            "Automation"
+        ],
+        "score": 9
+    },
+    {
+        "name": "Oliver Jones",
+        "available_skills": [
+            "Quality Control",
+            "Safety Procedures"
+        ],
+        "score": 2
+    },
+    {
+        "name": "Charlotte Garcia",
+        "available_skills": [
+            "Mechanical",
+            "Data Analysis"
+        ],
+        "score": 8
+    },
+    {
+        "name": "Elijah Miller",
+        "available_skills": [
+            "Process Control",
+            "Supply Chain Management"
+        ],
+        "score": 6
+    },
+    {
+        "name": "Amelia Davis",
         "available_skills": [
             "Brewing",
-            "Chemistry",
-            "Fluid Dynamics",
-            "Grain Handling"
-        ]
+            "Attention to Detail"
+        ],
+        "score": 4
     },
     {
-        "name": "Bob",
+        "name": "James Rodriguez",
         "available_skills": [
-            "Safety",
-            "Process Control",
-            "Mechanical",
-            "Fluid Dynamics"
-        ]
-    },
-    {
-        "name": "David",
-        "available_skills": [
-            "Grain Handling",
-            "Filtration",
-            "Chemistry",
-            "Process Control",
-            "Fluid Dynamics"
-        ]
-    },
-    {
-        "name": "Frank",
-        "available_skills": [
-            "Safety",
-            "Mechanical",
-            "Grain Handling",
-            "Fluid Dynamics",
+            "Quality Control",
             "Chemistry"
-        ]
-    },
-    {
-        "name": "Grace",
-        "available_skills": [
-            "Brewing",
-            "Chemistry",
-            "Filtration",
-            "Fluid Dynamics",
-            "Grain Handling",
-            "Mechanical",
-            "Process Control",
-            "Safety"
-        ]
-    },
-    {
-        "name": "Harry",
-        "available_skills": [
-            "Mechanical",
-            "Safety",
-            "Grain Handling"
-        ]
-    },
-    {
-        "name": "Ivy",
-        "available_skills": [
-            "Brewing",
-            "Chemistry",
-            "Process Control"
-        ]
-    },
-    {
-        "name": "Henley",
-        "available_skills": [
-            "Chemistry",
-            "Grain Handling"
         ],
         "score": 10
+    },
+    {
+        "name": "Ava Martinez",
+        "available_skills": [
+            "Logistics",
+            "Mechanical"
+        ],
+        "score": 1
+    },
+    {
+        "name": "William Hernandez",
+        "available_skills": [
+            "Safety Procedures",
+            "Negotiation"
+        ],
+        "score": 7
+    },
+    {
+        "name": "Sophia Lopez",
+        "available_skills": [
+            "Data Analysis",
+            "Process Control"
+        ],
+        "score": 5
+    },
+    {
+        "name": "Benjamin Gonzalez",
+        "available_skills": [
+            "Automation",
+            "Brewing"
+        ],
+        "score": 9
+    },
+    {
+        "name": "Isabella Wilson",
+        "available_skills": [
+            "Supply Chain Management",
+            "Chemistry"
+        ],
+        "score": 3
+    },
+    {
+        "name": "Lucas Anderson",
+        "available_skills": [
+            "Attention to Detail",
+            "Quality Control"
+        ],
+        "score": 6
+    },
+    {
+        "name": "Mia Thomas",
+        "available_skills": [
+            "Mechanical",
+            "Logistics"
+        ],
+        "score": 8
+    },
+    {
+        "name": "Henry Taylor",
+        "available_skills": [
+            "Negotiation",
+            "Process Control"
+        ],
+        "score": 2
+    },
+    {
+        "name": "Evelyn Moore",
+        "available_skills": [
+            "Safety Procedures",
+            "Data Analysis"
+        ],
+        "score": 4
+    },
+    {
+        "name": "Alexander Jackson",
+        "available_skills": [
+            "Brewing",
+            "Supply Chain Management"
+        ],
+        "score": 10
+    },
+    {
+        "name": "Harper White",
+        "available_skills": [
+            "Automation",
+            "Attention to Detail"
+        ],
+        "score": 7
     }
 ]

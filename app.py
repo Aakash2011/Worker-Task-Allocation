@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
-from src.data_manager import add_task, get_tasks, add_worker, get_workers, clear_all_data
+# Import the new functions from data_manager
+# IMPORTANT: Corrected the import name to reset_data_from_files
+from src.data_manager import add_task, get_tasks, add_worker, get_workers, clear_all_data, reset_data_from_files, save_data # save_data is useful for persistence
 from src.optimization_model import solve_task_allocation
 
 # --- Global Page Configuration (needs to be at the very top) ---
@@ -78,6 +80,7 @@ def add_task_page():
             if task_name and skills_input:
                 required_skills = [s.strip().title() for s in skills_input.split(',') if s.strip()]
                 add_task(task_name, required_skills)
+                # save_data is implicitly called by add_task inside data_manager
                 st.success(f"Task '{task_name}' added successfully to the system!")
             else:
                 st.error("Please ensure both 'Task Name' and 'Required Skills' are filled.")
@@ -146,6 +149,7 @@ def add_worker_page():
             if worker_name and selected_skills:
                 # MODIFIED: Pass the worker_score to add_worker
                 add_worker(worker_name, selected_skills, worker_score)
+                # save_data is implicitly called by add_worker inside data_manager
                 st.success(f"Worker '{worker_name}' added with skills: {', '.join(selected_skills)} and score: {worker_score}.")
             else:
                 st.error("Please enter a worker name and select at least one skill.")
@@ -254,9 +258,16 @@ def run_optimization_page():
             st.error("Could not find an optimal solution. Please check your tasks and workers for feasibility. Ensure all required skills can be met by your available workforce.")
 
     st.markdown("---")
+    # NEW: Reset Data Button
+    st.info("🔄 **Reset Data:** Click the button below to revert to the dummy data'. This will overwrite any unsaved changes.")
+    if st.button("🔵 Reset Data", use_container_width=True, type="secondary", help="This will clear current in-memory data and reload dummy data."):
+        reset_data_from_files() # Call the correctly named function
+        st.success("Data has been reset!")
+        st.rerun() # Rerun to refresh the displayed data
+
     st.warning("⚠️ **Danger Zone:** Use the button below to clear all stored task and worker data.")
-    if st.button("Clear All Data", use_container_width=True, type="secondary" ,help="This will permanently delete all saved tasks and workers."):
-        clear_all_data()
+    if st.button("🔴 Clear All Data", use_container_width=True, type="secondary" ,help="This will permanently delete all saved tasks and workers."):
+        clear_all_data() # This now also saves empty files
         st.success("All task and worker data has been cleared.")
         st.rerun()
 
@@ -285,7 +296,7 @@ with st.sidebar:
         options=navigation_options,
         index=current_radio_index,
         key="main_navigation_radio",
-        label_visibility="hidden" 
+        label_visibility="hidden"
     )
 
 
