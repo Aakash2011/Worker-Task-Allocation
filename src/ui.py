@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-from src.data_manager import add_task, get_tasks, add_worker, get_workers, clear_all_data
-from src.optimization_model import solve_task_allocation
+from .data_manager import add_task, get_tasks, add_worker, get_workers, clear_all_data
+from .optimization_model import solve_task_allocation
 
 # --- Global Page Configuration (needs to be at the very top) ---
 st.set_page_config(
