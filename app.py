@@ -403,7 +403,7 @@ def run_optimization_page():
 
 # --- Streamlit App Layout (Main Logic) ---
 if 'page' not in st.session_state:
-    st.session_state.page = "Home"
+    st.session_state.page = "Run Optimization" # Changed initial page to "Run Optimization"
 
 with st.sidebar:
 
