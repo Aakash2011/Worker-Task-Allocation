@@ -352,7 +352,7 @@ def run_optimization_page():
 
             col_obj, col_unused = st.columns(2)
             with col_obj:
-                st.metric(label="Minimum Workers Required", value=int(results['objective_value']), delta_color="off")
+                st.metric(label="Minimum Workers Required", value=int(results['minimum_workers_count']), delta_color="off")
             with col_unused:
                 total_workers_available = len(get_workers())
                 workers_utilized = len(results['workers_used'])
