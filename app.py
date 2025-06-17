@@ -293,8 +293,6 @@ def run_optimization_page():
     tasks = get_tasks()
     workers = get_workers()
 
-    st.markdown("---")
-
     col_tasks, col_workers = st.columns(2)
 
     with col_tasks:
@@ -355,7 +353,7 @@ def run_optimization_page():
                 st.metric(label="Minimum Workers Required", value=int(results['minimum_workers_count']), delta_color="off")
             with col_unused:
                 total_workers_available = len(get_workers())
-                workers_utilized = len(results['workers_used'])
+                workers_utilized = int(results['minimum_workers_count'])
                 workers_unused = total_workers_available - workers_utilized
                 st.metric(label="Workers Not Utilized", value=workers_unused, delta_color="off")
 
