@@ -5,6 +5,10 @@
             "Chemistry",
             "Quality Control",
             "Data Analysis"
+        ],
+        "day_of_week": [
+            "Monday",
+            "Wednesday"
         ]
     },
     {
@@ -13,6 +17,9 @@
             "Mechanical",
             "Automation",
             "Safety Procedures"
+        ],
+        "day_of_week": [
+            "Tuesday"
         ]
     },
     {
@@ -21,6 +28,10 @@
             "Supply Chain Management",
             "Negotiation",
             "Logistics"
+        ],
+        "day_of_week": [
+            "Wednesday",
+            "Friday"
         ]
     },
     {
@@ -28,6 +39,9 @@
         "required_skills": [
             "Brewing",
             "Process Control"
+        ],
+        "day_of_week": [
+            "Thursday"
         ]
     },
     {
@@ -35,6 +49,10 @@
         "required_skills": [
             "Quality Control",
             "Attention to Detail"
+        ],
+        "day_of_week": [
+            "Friday",
+            "Monday"
         ]
     }
 ]

@@ -2,101 +2,121 @@
     {
         "name": "Liam Smith",
         "available_skills": ["Process Control", "Automation"],
-        "score": 5
+        "score": 5,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Olivia Johnson",
         "available_skills": ["Negotiation", "Quality Control"],
-        "score": 7
+        "score": 7,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Noah Williams",
         "available_skills": ["Logistics", "Brewing"],
-        "score": 3
+        "score": 3,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Emma Brown",
         "available_skills": ["Chemistry", "Automation"],
-        "score": 9
+        "score": 9,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Oliver Jones",
         "available_skills": ["Quality Control", "Safety Procedures"],
-        "score": 2
+        "score": 2,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Charlotte Garcia",
         "available_skills": ["Mechanical", "Data Analysis"],
-        "score": 8
+        "score": 8,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Elijah Miller",
         "available_skills": ["Process Control", "Supply Chain Management"],
-        "score": 6
+        "score": 6,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Amelia Davis",
         "available_skills": ["Brewing", "Attention to Detail"],
-        "score": 4
+        "score": 4,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "James Rodriguez",
         "available_skills": ["Quality Control", "Chemistry"],
-        "score": 10
+        "score": 10,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Ava Martinez",
         "available_skills": ["Logistics", "Mechanical"],
-        "score": 1
+        "score": 1,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "William Hernandez",
         "available_skills": ["Safety Procedures", "Negotiation"],
-        "score": 7
+        "score": 7,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Sophia Lopez",
         "available_skills": ["Data Analysis", "Process Control"],
-        "score": 5
+        "score": 5,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Benjamin Gonzalez",
         "available_skills": ["Automation", "Brewing"],
-        "score": 9
+        "score": 9,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Isabella Wilson",
         "available_skills": ["Supply Chain Management", "Chemistry"],
-        "score": 3
+        "score": 3,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Lucas Anderson",
         "available_skills": ["Attention to Detail", "Quality Control"],
-        "score": 6
+        "score": 6,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Mia Thomas",
         "available_skills": ["Mechanical", "Logistics"],
-        "score": 8
+        "score": 8,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Henry Taylor",
         "available_skills": ["Negotiation", "Process Control"],
-        "score": 2
+        "score": 2,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Evelyn Moore",
         "available_skills": ["Safety Procedures", "Data Analysis"],
-        "score": 4
+        "score": 4,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Alexander Jackson",
         "available_skills": ["Brewing", "Supply Chain Management"],
-        "score": 10
+        "score": 10,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     },
     {
         "name": "Harper White",
         "available_skills": ["Automation", "Attention to Detail"],
-        "score": 7
+        "score": 7,
+        "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     }
 ]

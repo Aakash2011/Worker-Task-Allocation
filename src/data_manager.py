@@ -48,7 +48,7 @@ def _write_initial_dummy_data_to_files():
     to the main tasks and workers JSON files.
     """
     _ensure_data_directory()
-    
+
     # Load dummy data from source files
     dummy_tasks = load_data_from_file(SOURCE_DUMMY_TASKS_FILE)
     dummy_workers = load_data_from_file(SOURCE_DUMMY_WORKERS_FILE)
@@ -66,7 +66,8 @@ def _load_in_memory_data():
     print("In-memory data loaded from files.")
 
 # REVERTED: add_task - no edit functionality for tasks
-def add_task(task_name: str, required_skills: List[str]):
+# Modified: day_of_week now accepts a List[str]
+def add_task(task_name: str, required_skills: List[str], day_of_week: List[str]): #
     """Adds a new task to in-memory data and saves to file."""
     global _tasks
     # The check for uniqueness is now done in app.py before calling this function,
@@ -77,15 +78,18 @@ def add_task(task_name: str, required_skills: List[str]):
         # you might want to raise an error or return a status.
         # For now, we'll assume app.py handles the primary warning.
         return False # Indicate that task was not added due to duplicate
-    _tasks.append({"name": task_name, "required_skills": required_skills})
+    _tasks.append({"name": task_name, "required_skills": required_skills, "day_of_week": day_of_week}) #
     save_data(_tasks, TASKS_FILE)
     return True # Indicate success
 
 # MODIFIED: add_or_update_worker - allows editing existing workers
-def add_or_update_worker(worker_name: str, available_skills: List[str], score: int = 5, original_name: str = None):
+def add_or_update_worker(worker_name: str, available_skills: List[str], score: int = 5, available_days: List[str] = None, original_name: str = None):
     """Adds a new worker or updates an existing worker in-memory and saves to file."""
     global _workers
-    
+
+    if available_days is None:
+        available_days = []
+
     # When updating, if the name has changed, remove the old entry
     if original_name and original_name != worker_name:
         _workers = [w for w in _workers if w["name"].lower() != original_name.lower()]
@@ -95,12 +99,13 @@ def add_or_update_worker(worker_name: str, available_skills: List[str], score: i
         if worker["name"].lower() == worker_name.lower(): # Case-insensitive check
             worker["available_skills"] = available_skills
             worker["score"] = score
+            worker["available_days"] = available_days
             found = True
             break
-    
+
     if not found:
-        _workers.append({"name": worker_name, "available_skills": available_skills, "score": score})
-    
+        _workers.append({"name": worker_name, "available_skills": available_skills, "score": score, "available_days": available_days})
+
     save_data(_workers, WORKERS_FILE)
 
 

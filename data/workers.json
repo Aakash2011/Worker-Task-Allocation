@@ -5,7 +5,15 @@
             "Process Control",
             "Automation"
         ],
-        "score": 5
+        "score": 5,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Olivia Johnson",
@@ -13,7 +21,15 @@
             "Negotiation",
             "Quality Control"
         ],
-        "score": 7
+        "score": 7,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Noah Williams",
@@ -21,7 +37,15 @@
             "Logistics",
             "Brewing"
         ],
-        "score": 3
+        "score": 3,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Emma Brown",
@@ -29,7 +53,15 @@
             "Chemistry",
             "Automation"
         ],
-        "score": 9
+        "score": 9,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Oliver Jones",
@@ -37,7 +69,15 @@
             "Quality Control",
             "Safety Procedures"
         ],
-        "score": 2
+        "score": 2,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Charlotte Garcia",
@@ -45,7 +85,15 @@
             "Mechanical",
             "Data Analysis"
         ],
-        "score": 8
+        "score": 8,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Elijah Miller",
@@ -53,7 +101,15 @@
             "Process Control",
             "Supply Chain Management"
         ],
-        "score": 6
+        "score": 6,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Amelia Davis",
@@ -61,7 +117,15 @@
             "Brewing",
             "Attention to Detail"
         ],
-        "score": 4
+        "score": 4,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "James Rodriguez",
@@ -69,7 +133,15 @@
             "Quality Control",
             "Chemistry"
         ],
-        "score": 10
+        "score": 10,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Ava Martinez",
@@ -77,7 +149,15 @@
             "Logistics",
             "Mechanical"
         ],
-        "score": 1
+        "score": 1,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "William Hernandez",
@@ -85,7 +165,15 @@
             "Safety Procedures",
             "Negotiation"
         ],
-        "score": 7
+        "score": 7,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Sophia Lopez",
@@ -93,7 +181,15 @@
             "Data Analysis",
             "Process Control"
         ],
-        "score": 5
+        "score": 5,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Benjamin Gonzalez",
@@ -101,7 +197,15 @@
             "Automation",
             "Brewing"
         ],
-        "score": 9
+        "score": 9,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Isabella Wilson",
@@ -109,7 +213,15 @@
             "Supply Chain Management",
             "Chemistry"
         ],
-        "score": 3
+        "score": 3,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Lucas Anderson",
@@ -117,7 +229,15 @@
             "Attention to Detail",
             "Quality Control"
         ],
-        "score": 6
+        "score": 6,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Mia Thomas",
@@ -125,7 +245,15 @@
             "Mechanical",
             "Logistics"
         ],
-        "score": 8
+        "score": 8,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Henry Taylor",
@@ -133,7 +261,15 @@
             "Negotiation",
             "Process Control"
         ],
-        "score": 2
+        "score": 2,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Evelyn Moore",
@@ -141,7 +277,15 @@
             "Safety Procedures",
             "Data Analysis"
         ],
-        "score": 4
+        "score": 4,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Alexander Jackson",
@@ -149,7 +293,15 @@
             "Brewing",
             "Supply Chain Management"
         ],
-        "score": 10
+        "score": 10,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     },
     {
         "name": "Harper White",
@@ -157,6 +309,14 @@
             "Automation",
             "Attention to Detail"
         ],
-        "score": 7
+        "score": 7,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ]
     }
 ]

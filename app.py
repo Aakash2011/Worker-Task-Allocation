@@ -52,14 +52,17 @@ def home_page():
     - **Resource Minimization:** Minimize the total number of workers required for all tasks.
     - **Skill Matching:** Ensure every task is covered by workers possessing the necessary skills (even by teams!).
     - **Worker Prioritization:** Assign scores to workers to influence task allocation (e.g., prefer high-scoring workers).
+    - **Day-of-Week Matching:** Ensure tasks are assigned only to workers available on the required day.
     """)
 
 
 def add_task_page():
-    render_main_title("Define Production Tasks", "Specify each task and the unique skills essential for its completion")
+    render_main_title("Define Production Tasks", "Specify each task, the unique skills essential for its completion, and its scheduled day(s).")
 
     # Message container for temporary messages related to form submission
     form_message_container = st.empty()
+
+    DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
     with st.form("add_task_form", clear_on_submit=True): # Keep clear_on_submit=True
         render_section_title("New Task Details")
@@ -78,12 +81,20 @@ def add_task_page():
                 placeholder="e.g., Chemistry, Quality Control, Data Analysis",
                 help="List all skills required for this task, separated by commas."
             )
+        # Changed to st.multiselect for multiple day selection
+        selected_days_of_week = st.multiselect( #
+            "Scheduled Day(s) of Week", #
+            options=DAYS_OF_WEEK, #
+            default=[], #
+            key="task_days_input", #
+            help="Select all days of the week this task is scheduled for." #
+        )
 
         st.markdown("---")
         submit_button = st.form_submit_button("Add Task to Inventory", type="primary")
 
         if submit_button:
-            if task_name and skills_input:
+            if task_name and skills_input and selected_days_of_week: # Check if multiple days are selected
                 tasks = get_tasks()
                 existing_task_names = [task['name'].lower() for task in tasks] # Case-insensitive check
 
@@ -92,13 +103,13 @@ def add_task_page():
                     time.sleep(2)
                 else:
                     required_skills = [s.strip().title() for s in skills_input.split(',') if s.strip()]
-                    add_task(task_name, required_skills)
-                    form_message_container.success(f"Task '{task_name}' added successfully to the system!")
+                    add_task(task_name, required_skills, selected_days_of_week) # Pass list of days
+                    form_message_container.success(f"Task '{task_name}' added successfully to the system for day(s): {', '.join(selected_days_of_week)}!")
                     time.sleep(2) # Keep for message visibility
                     st.rerun() # Rerun to refresh the displayed data
             else:
-                form_message_container.error("Please ensure both 'Task Name' and 'Required Skills' are filled.")
-                time.sleep(2) # Keep for message visibility
+                form_message_container.error("Please ensure 'Task Name', 'Required Skills', and at least one 'Scheduled Day of Week' are filled.")
+                time.sleep(2)
 
 
     st.markdown("---")
@@ -106,17 +117,19 @@ def add_task_page():
     tasks = get_tasks()
     if tasks:
         df_tasks = pd.DataFrame(tasks)
-        df_tasks.rename(columns={'name': 'Task Name', 'required_skills': 'Required Skills'}, inplace=True)
+        # Renamed 'day_of_week' to 'scheduled_days' to reflect multiple days
+        df_tasks.rename(columns={'name': 'Task Name', 'required_skills': 'Required Skills', 'day_of_week': 'Scheduled Day(s)'}, inplace=True)
         df_tasks['Required Skills'] = df_tasks['Required Skills'].apply(lambda x: ', '.join(x))
+        df_tasks['Scheduled Day(s)'] = df_tasks['Scheduled Day(s)'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x) # Join list of days
 
-        st.dataframe(df_tasks[['Task Name', 'Required Skills']], use_container_width=True, hide_index=True)
+        st.dataframe(df_tasks[['Task Name', 'Required Skills', 'Scheduled Day(s)']], use_container_width=True, hide_index=True)
         st.markdown("---")
     else:
         st.info("No tasks have been added yet. Use the form above to begin building your task inventory.")
 
 
 def add_worker_page():
-    render_main_title("Manage Worker Profiles", "Assign skills to workers. For consistency and accuracy, worker skills can only be chosen from the set of skills required by existing tasks")
+    render_main_title("Manage Worker Profiles", "Assign skills and available days to workers. Worker skills can only be chosen from the set of skills required by existing tasks.")
 
     # Message container for temporary messages related to form submission
     form_message_container = st.empty()
@@ -124,14 +137,11 @@ def add_worker_page():
     # Placeholder for the worker form
     worker_form_placeholder = st.empty()
 
+    DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
     # Initialize session state for editing if not already present
     if 'editing_worker' not in st.session_state:
         st.session_state.editing_worker = None
-    # Remove scroll_to_top as we are changing the approach
-    # if 'scroll_to_top' not in st.session_state:
-    #     st.session_state.scroll_to_top = False
-
 
     tasks = get_tasks()
     all_required_skills = set()
@@ -143,24 +153,27 @@ def add_worker_page():
     if not available_skills_for_selection:
         st.warning("No tasks or required skills defined yet. Please add tasks first using the 'Add Task' section to populate the pool of available skills for workers.")
         st.info("Worker skills must be selected from the skills demanded by existing tasks to ensure practical applicability.")
-        return
+        # return - removed return to allow workers to be added without skills, if needed for some reason, but they won't be useful for task allocation.
 
     # Set initial values for form inputs based on editing_worker or clear state
     current_worker_name = ""
     current_selected_skills = []
     current_worker_score = 5
+    current_available_days = []
     original_worker_name = None
 
     if st.session_state.editing_worker:
         current_worker_name = st.session_state.editing_worker['name']
         current_selected_skills = st.session_state.editing_worker['available_skills']
         current_worker_score = st.session_state.editing_worker['score']
+        current_available_days = st.session_state.editing_worker.get('available_days', []) # Handle old data without days
         original_worker_name = st.session_state.editing_worker['name']
     # If not editing, and no error on previous submission, ensure inputs are blank for new entry
     elif not st.session_state.get('worker_form_error', False):
         current_worker_name = ""
         current_selected_skills = []
         current_worker_score = 5
+        current_available_days = []
 
 
     # Reset error flag for current rerun
@@ -192,6 +205,14 @@ def add_worker_page():
                     help="Select skills this worker possesses from the list generated from existing tasks."
                 )
 
+            selected_available_days = st.multiselect(
+                "Available Days of Week (Select all that apply)",
+                options=DAYS_OF_WEEK,
+                default=current_available_days,
+                key="worker_days_multiselect",
+                help="Select the days of the week this worker is available."
+            )
+
             with st.expander("Advanced Settings"):
                 worker_score = st.slider(
                     "Worker Score (0 - 10)",
@@ -220,7 +241,7 @@ def add_worker_page():
 
             if submit_button:
                 form_message_container.empty()
-                if worker_name and selected_skills:
+                if worker_name and selected_available_days: # Skills are now optional for adding a worker
                     workers = get_workers()
                     existing_worker_names = [worker['name'].lower() for worker in workers]
 
@@ -230,7 +251,7 @@ def add_worker_page():
                             st.session_state.worker_form_error = True
                             time.sleep(2)
                         else:
-                            add_or_update_worker(worker_name, selected_skills, worker_score, original_name=original_worker_name)
+                            add_or_update_worker(worker_name, selected_skills, worker_score, selected_available_days, original_name=original_worker_name)
                             form_message_container.success(f"Worker '{worker_name}' updated successfully!")
                             st.session_state.editing_worker = None # Exit edit mode after update
                             time.sleep(2)
@@ -241,12 +262,12 @@ def add_worker_page():
                             st.session_state.worker_form_error = True
                             time.sleep(2)
                         else:
-                            add_or_update_worker(worker_name, selected_skills, worker_score)
-                            form_message_container.success(f"Worker '{worker_name}' added with skills: {', '.join(selected_skills)} and score: {worker_score}.")
+                            add_or_update_worker(worker_name, selected_skills, worker_score, selected_available_days)
+                            form_message_container.success(f"Worker '{worker_name}' added with skills: {', '.join(selected_skills)}, score: {worker_score}, and available days: {', '.join(selected_available_days)}.")
                             time.sleep(2) # Show message for 2 seconds
                             st.rerun() # Rerun to refresh the displayed data and clear form (if clear_on_submit=True for new)
                 else:
-                    form_message_container.error("Please enter a worker name and select at least one skill.")
+                    form_message_container.error("Please enter a worker name and select at least one available day.")
                     st.session_state.worker_form_error = True
                     time.sleep(2)
 
@@ -256,23 +277,33 @@ def add_worker_page():
     workers = get_workers()
     if workers:
         df_workers = pd.DataFrame(workers)
-        df_workers.rename(columns={'name': 'Worker Name', 'available_skills': 'Available Skills', 'score': 'Score'}, inplace=True)
+        df_workers.rename(
+            columns={
+                'name': 'Worker Name',
+                'available_skills': 'Available Skills',
+                'score': 'Score',
+                'available_days': 'Available Days'
+            },
+            inplace=True
+        )
         df_workers['Available Skills'] = df_workers['Available Skills'].apply(lambda x: ', '.join(x))
+        df_workers['Available Days'] = df_workers['Available Days'].apply(lambda x: ', '.join(x))
+
 
         for i, row in df_workers.iterrows():
             cols = st.columns([0.6, 0.2, 0.2])
             cols[0].write(f"**{row['Worker Name']}**")
-            cols[0].markdown(f"<small>Skills: {row['Available Skills']} | Score: {row['Score']}</small>", unsafe_allow_html=True)
+            cols[0].markdown(f"<small>Skills: {row['Available Skills']} | Score: {row['Score']} | Available Days: {row['Available Days']}</small>", unsafe_allow_html=True)
 
             with cols[1]:
                 if st.button("✏️ Edit", key=f"edit_worker_{i}"):
                     st.session_state.editing_worker = {
                         "name": row['Worker Name'],
-                        "available_skills": row['Available Skills'].split(', '),
-                        "score": row['Score']
+                        "available_skills": row['Available Skills'].split(', ') if row['Available Skills'] else [],
+                        "score": row['Score'],
+                        "available_days": row['Available Days'].split(', ') if row['Available Days'] else []
                     }
                     form_message_container.empty()
-                    # No explicit scroll, but the form will now be at the top of the placeholder
                     st.rerun()
             with cols[2]:
                 if st.button("🗑️ Delete", key=f"delete_worker_{i}"):
@@ -298,20 +329,49 @@ def run_optimization_page():
     with col_tasks:
         render_section_title("Current Tasks")
         if tasks:
-            df_tasks = pd.DataFrame(tasks)
-            df_tasks.rename(columns={'name': 'Task Name', 'required_skills': 'Required Skills'}, inplace=True)
+            # Ensure 'day_of_week' key exists for all tasks before creating DataFrame
+            # This handles cases where old data might not have the new key
+            tasks_for_df = []
+            for task in tasks:
+                task_copy = task.copy()
+                # Default to empty list for 'day_of_week' if not present or not a list
+                if 'day_of_week' not in task_copy or not isinstance(task_copy['day_of_week'], list):
+                    task_copy['day_of_week'] = []
+                tasks_for_df.append(task_copy)
+
+            df_tasks = pd.DataFrame(tasks_for_df)
+            # Renamed column to reflect multiple days
+            df_tasks.rename(columns={'name': 'Task Name', 'required_skills': 'Required Skills', 'day_of_week': 'Scheduled Day(s)'}, inplace=True)
             df_tasks['Required Skills'] = df_tasks['Required Skills'].apply(lambda x: ', '.join(x))
-            st.dataframe(df_tasks[['Task Name', 'Required Skills']], use_container_width=True, hide_index=True)
+            df_tasks['Scheduled Day(s)'] = df_tasks['Scheduled Day(s)'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+            st.dataframe(df_tasks[['Task Name', 'Required Skills', 'Scheduled Day(s)']], use_container_width=True, hide_index=True)
         else:
             st.warning("No tasks defined. Please add tasks from the sidebar.")
 
     with col_workers:
         render_section_title("Current Workers")
         if workers:
-            df_workers = pd.DataFrame(workers)
-            df_workers.rename(columns={'name': 'Worker Name', 'available_skills': 'Available Skills', 'score': 'Score'}, inplace=True)
+            # Ensure 'available_days' key exists for all workers before creating DataFrame
+            workers_for_df = []
+            for worker in workers:
+                worker_copy = worker.copy()
+                if 'available_days' not in worker_copy:
+                    worker_copy['available_days'] = [] # Default to empty list for older entries
+                workers_for_df.append(worker_copy)
+
+            df_workers = pd.DataFrame(workers_for_df)
+            df_workers.rename(
+                columns={
+                    'name': 'Worker Name',
+                    'available_skills': 'Available Skills',
+                    'score': 'Score',
+                    'available_days': 'Available Days'
+                },
+                inplace=True
+            )
             df_workers['Available Skills'] = df_workers['Available Skills'].apply(lambda x: ', '.join(x))
-            display_columns = ['Worker Name', 'Available Skills']
+            df_workers['Available Days'] = df_workers['Available Days'].apply(lambda x: ', '.join(x))
+            display_columns = ['Worker Name', 'Available Skills', 'Available Days']
             if 'Score' in df_workers.columns:
                 display_columns.append('Score')
             st.dataframe(df_workers[display_columns], use_container_width=True, hide_index=True)
@@ -320,7 +380,7 @@ def run_optimization_page():
 
     st.markdown("---")
 
-    st.info("Click the button below to run the optimization model. It will determine the minimum number of workers required and their optimal task assignments based on skill matching, preferring high-score workers.")
+    st.info("Click the button below to run the optimization model. It will determine the minimum number of workers required and their optimal task assignments based on skill and day matching, preferring high-score workers.")
 
     opt_message_placeholder = st.empty()
 
@@ -360,25 +420,48 @@ def run_optimization_page():
             st.markdown("---")
             render_section_title("Detailed Task Assignments")
 
-            assignments_data = []
-            for task, workers_list in results['assignments'].items():
-                assignments_data.append({
-                    "Task": task,
-                    "Assigned Workers": ", ".join(workers_list) if workers_list else "No Worker Assigned (Problem with Solver/Data)"
-                })
+            # Prepare data for the matrix
+            DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-            with st.expander("Click to view individual task assignments", expanded=True):
-                st.dataframe(pd.DataFrame(assignments_data), use_container_width=True, hide_index=True)
+            # Create a dictionary to easily look up task days
+            # TaskDay is now a list of strings
+            task_days_map = {task['name']: task.get('day_of_week', []) for task in tasks} #
+
+            # Initialize a dictionary for the matrix data for ALL workers
+            initial_matrix_data = {worker['name']: {day: "" for day in DAYS_OF_WEEK} for worker in workers}
+
+            # Populate matrix with assigned tasks only for workers that were utilized
+            for task_name, assigned_workers in results['assignments'].items():
+                task_days = task_days_map.get(task_name) # Get the list of days for the task
+                if task_days: # Only process if days are known and valid
+                    for worker_name in assigned_workers:
+                        # Only add to matrix_data if the worker was actually used in the optimal solution
+                        if worker_name in initial_matrix_data and worker_name in results['workers_used']: # Check if worker is utilized
+                            for day in task_days: # Iterate through each day the task is scheduled
+                                if day in initial_matrix_data[worker_name]:
+                                    if initial_matrix_data[worker_name][day]:
+                                        initial_matrix_data[worker_name][day] += f", {task_name}"
+                                    else:
+                                        initial_matrix_data[worker_name][day] = task_name
+
+            # Filter out workers who have no tasks assigned in the matrix (i.e., all their day entries are empty)
+            filtered_matrix_data = {
+                worker_name: days_data for worker_name, days_data in initial_matrix_data.items()
+                if any(day_task for day_task in days_data.values()) # Check if any day has a task
+            }
+
+            if filtered_matrix_data:
+                df_matrix = pd.DataFrame.from_dict(filtered_matrix_data, orient='index')
+                df_matrix.index.name = "Worker"
+                df_matrix.columns.name = "Day of Week"
+                st.dataframe(df_matrix, use_container_width=True)
+            else:
+                st.info("No workers were assigned tasks for specific days in the optimal solution.")
+
 
             st.markdown("---")
-            render_section_title("Workers Utilized")
-            if results['workers_used']:
-                st.write(f"The following workers are part of the optimal solution: **{', '.join(results['workers_used'])}**")
-            else:
-                st.warning("No workers were utilized. This might indicate an empty task list or an issue with the solution.")
-
         else:
-            opt_message_placeholder.error("Could not find an optimal solution. Please check your tasks and workers for feasibility. Ensure all required skills can be met by your available workforce.")
+            opt_message_placeholder.error("Could not find an optimal solution. Please check your tasks and workers for feasibility. Ensure all required skills can be met by your available workforce on the correct days.")
             time.sleep(2)
             opt_message_placeholder.empty()
 

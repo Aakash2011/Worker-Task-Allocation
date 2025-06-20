@@ -1,22 +1,27 @@
 [
     {
         "name": "Fermentation Monitoring",
-        "required_skills": ["Chemistry", "Quality Control", "Data Analysis"]
+        "required_skills": ["Chemistry", "Quality Control", "Data Analysis"],
+        "day_of_week": ["Monday", "Wednesday"]
     },
     {
         "name": "Bottling Line Setup",
-        "required_skills": ["Mechanical", "Automation", "Safety Procedures"]
+        "required_skills": ["Mechanical", "Automation", "Safety Procedures"],
+        "day_of_week": ["Tuesday"]
     },
     {
         "name": "Ingredient Procurement",
-        "required_skills": ["Supply Chain Management", "Negotiation", "Logistics"]
+        "required_skills": ["Supply Chain Management", "Negotiation", "Logistics"],
+        "day_of_week": ["Wednesday", "Friday"]
     },
     {
         "name": "Brewing Kettle Operation",
-        "required_skills": ["Brewing", "Process Control"]
+        "required_skills": ["Brewing", "Process Control"],
+        "day_of_week": ["Thursday"]
     },
     {
         "name": "Packaging Inspection",
-        "required_skills": ["Quality Control", "Attention to Detail"]
+        "required_skills": ["Quality Control", "Attention to Detail"],
+        "day_of_week": ["Friday", "Monday"]
     }
 ]
