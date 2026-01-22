@@ -9,7 +9,7 @@ from src.data_manager import (
     add_task, get_tasks, add_or_update_worker, get_workers,
     clear_all_data, reset_data_from_files, delete_worker
 )
-from src.optimization_model import solve_task_allocation
+from src.optimization_model import solve_task_allocation, SCENARIO_PRESETS
 
 # --- Global Page Configuration ---
 st.set_page_config(
@@ -167,9 +167,11 @@ with st.sidebar:
     st.markdown("#### 📋 Scenario")
     scenario = st.selectbox(
         "Planning Scenario",
-        ["Standard Week", "High Production", "Maintenance Week", "Shutdown Period"],
+        list(SCENARIO_PRESETS.keys()),
         help="Select the operational scenario for optimization"
     )
+    scenario_info = SCENARIO_PRESETS[scenario]
+    st.caption(f"*{scenario_info['description']}*")
 
     st.markdown("---")
 
@@ -243,7 +245,14 @@ if run_optimization:
         st.sidebar.error("No workers defined!")
     else:
         with st.spinner("Optimizing..."):
-            results = solve_task_allocation(tasks, workers)
+            results = solve_task_allocation(
+                tasks,
+                workers,
+                scenario=scenario,
+                minimize_workers_weight=minimize_workers_weight,
+                priority_weight=priority_weight,
+                worker_score_weight=worker_score_weight
+            )
             st.session_state.optimization_results = results
         if results:
             st.sidebar.success("Optimization complete!")
@@ -353,11 +362,28 @@ with tab1:
         if tasks:
             df_tasks = pd.DataFrame(tasks)
             df_tasks['required_skills'] = df_tasks['required_skills'].apply(lambda x: ', '.join(x))
+            # Ensure priority column exists (default to 5 for backward compatibility)
+            if 'priority' not in df_tasks.columns:
+                df_tasks['priority'] = 5
             df_tasks = df_tasks.rename(columns={
                 'name': 'Task Name',
-                'required_skills': 'Required Skills'
+                'required_skills': 'Required Skills',
+                'priority': 'Priority'
             })
-            st.dataframe(df_tasks, use_container_width=True, hide_index=True)
+            st.dataframe(
+                df_tasks[['Task Name', 'Required Skills', 'Priority']],
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Priority": st.column_config.ProgressColumn(
+                        "Priority",
+                        format="%d",
+                        min_value=1,
+                        max_value=10,
+                        help="Task priority (1-10, higher = more important)"
+                    )
+                }
+            )
         else:
             st.info("No tasks have been added yet.")
 
@@ -373,6 +399,13 @@ with tab1:
                     placeholder="Chemistry, Quality Control",
                     help="Comma-separated list"
                 )
+                task_priority = st.slider(
+                    "Priority",
+                    min_value=1,
+                    max_value=10,
+                    value=5,
+                    help="Higher priority tasks are scheduled first (1-10)"
+                )
 
                 if st.form_submit_button("Add Task", type="primary"):
                     if task_name and skills_input:
@@ -381,7 +414,7 @@ with tab1:
                             st.error("Task already exists!")
                         else:
                             skills = [s.strip().title() for s in skills_input.split(',') if s.strip()]
-                            add_task(task_name, skills)
+                            add_task(task_name, skills, task_priority)
                             st.success(f"Added '{task_name}'")
                             st.session_state.show_add_task_form = False
                             time.sleep(1)
@@ -427,8 +460,14 @@ with tab2:
         st.plotly_chart(fig_placeholder, use_container_width=True)
 
     else:
+        # Show scenario info
+        st.caption(f"**Scenario:** {results.get('scenario', 'Standard Week')} — {results.get('scenario_params', {}).get('description', '')}")
+
         # Optimization Summary Metrics
         col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+
+        tasks_completed = results.get('tasks_completed', [])
+        tasks_partial = results.get('tasks_partial', [])
 
         with col_m1:
             st.metric(
@@ -439,16 +478,23 @@ with tab2:
             )
 
         with col_m2:
-            tasks_scheduled = sum(1 for w in results['assignments'].values() if w)
-            st.metric("Tasks Scheduled", tasks_scheduled, delta=f"of {len(tasks)}")
+            st.metric(
+                "Fully Completed",
+                len(tasks_completed),
+                delta=f"of {len(tasks)} tasks"
+            )
 
         with col_m3:
-            unscheduled = len(tasks) - tasks_scheduled
-            st.metric("Unscheduled", unscheduled, delta="tasks" if unscheduled > 0 else None)
+            st.metric(
+                "Partial/Uncovered",
+                len(tasks_partial),
+                delta="needs attention" if tasks_partial else None,
+                delta_color="inverse" if tasks_partial else "off"
+            )
 
         with col_m4:
-            efficiency = (tasks_scheduled / len(tasks) * 100) if tasks else 0
-            st.metric("Efficiency", f"{efficiency:.0f}%")
+            efficiency = (len(tasks_completed) / len(tasks) * 100) if tasks else 0
+            st.metric("Completion Rate", f"{efficiency:.0f}%")
 
         st.markdown("---")
 
@@ -477,38 +523,80 @@ with tab2:
 
             st.caption("💡 Hover over tasks to see details. Colors represent assigned workers.")
 
-        # Unscheduled Tasks Alert
-        unscheduled_tasks = [
+        # Uncovered Skills Alert
+        uncovered_skills = results.get('uncovered_skills', {})
+        tasks_partial = results.get('tasks_partial', [])
+
+        if uncovered_skills or tasks_partial:
+            st.warning(f"⚠️ {len(tasks_partial)} task(s) have missing skill coverage")
+            with st.expander("View tasks with uncovered skills", expanded=True):
+                for task_name, missing_skills in uncovered_skills.items():
+                    task_info = next((t for t in tasks if t['name'] == task_name), None)
+                    priority = task_info.get('priority', 5) if task_info else 5
+                    st.write(f"- **{task_name}** (Priority: {priority})")
+                    st.write(f"  - Missing skills: `{', '.join(missing_skills)}`")
+                    assigned = results['assignments'].get(task_name, [])
+                    if assigned:
+                        st.write(f"  - Assigned workers: {', '.join(assigned)}")
+
+        # Unassigned tasks (no workers at all)
+        unassigned_tasks = [
             task for task in tasks
             if not results['assignments'].get(task['name'])
         ]
 
-        if unscheduled_tasks:
-            st.warning(f"⚠️ {len(unscheduled_tasks)} task(s) could not be scheduled")
-            with st.expander("View unscheduled tasks"):
-                for task in unscheduled_tasks:
-                    st.write(f"- **{task['name']}**: requires {', '.join(task['required_skills'])}")
+        if unassigned_tasks:
+            st.error(f"❌ {len(unassigned_tasks)} task(s) have no workers assigned")
+            with st.expander("View unassigned tasks"):
+                for task in unassigned_tasks:
+                    st.write(f"- **{task['name']}** (Priority: {task.get('priority', 5)}): requires {', '.join(task['required_skills'])}")
 
         st.markdown("---")
 
         # Detailed Assignments Table
         st.markdown("##### 📋 Detailed Task Assignments")
 
+        tasks_completed = results.get('tasks_completed', [])
+        uncovered_skills = results.get('uncovered_skills', {})
+
         assignments_data = []
         for task_name, assigned_workers in results['assignments'].items():
             task_info = next((t for t in tasks if t['name'] == task_name), None)
+            priority = task_info.get('priority', 5) if task_info else 5
+            missing = uncovered_skills.get(task_name, [])
+
+            if task_name in tasks_completed:
+                status = "✅ Complete"
+            elif assigned_workers and missing:
+                status = "⚠️ Partial"
+            elif assigned_workers:
+                status = "✅ Assigned"
+            else:
+                status = "❌ Unassigned"
+
             assignments_data.append({
+                "Priority": priority,
                 "Task": task_name,
                 "Required Skills": ', '.join(task_info['required_skills']) if task_info else "",
-                "Assigned Workers": ', '.join(assigned_workers) if assigned_workers else "❌ Unassigned",
-                "Status": "✅ Scheduled" if assigned_workers else "⚠️ Needs Attention"
+                "Assigned Workers": ', '.join(assigned_workers) if assigned_workers else "—",
+                "Missing Skills": ', '.join(missing) if missing else "—",
+                "Status": status
             })
+
+        # Sort by priority (highest first)
+        assignments_data.sort(key=lambda x: x['Priority'], reverse=True)
 
         st.dataframe(
             pd.DataFrame(assignments_data),
             use_container_width=True,
             hide_index=True,
             column_config={
+                "Priority": st.column_config.ProgressColumn(
+                    "Priority",
+                    format="%d",
+                    min_value=1,
+                    max_value=10
+                ),
                 "Status": st.column_config.TextColumn(width="small")
             }
         )
