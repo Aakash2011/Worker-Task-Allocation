@@ -3,3 +3,4 @@ highspy
 streamlit
 pandas
 jsonpickle
+plotly
