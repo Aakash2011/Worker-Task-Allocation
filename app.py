@@ -210,7 +210,7 @@ with st.sidebar:
     # Run Optimization Button
     run_optimization = st.button(
         "⚡ Run Optimization",
-        use_container_width=True,
+        width='stretch',
         type="primary"
     )
 
@@ -221,13 +221,13 @@ with st.sidebar:
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🔄 Reset", use_container_width=True, help="Reset to dummy data"):
+        if st.button("🔄 Reset", width='stretch', help="Reset to dummy data"):
             reset_data_from_files()
             st.session_state.optimization_results = None
             st.session_state.editing_worker = None
             st.rerun()
     with col2:
-        if st.button("🗑️ Clear", use_container_width=True, help="Clear all data"):
+        if st.button("🗑️ Clear", width='stretch', help="Clear all data"):
             clear_all_data()
             st.session_state.optimization_results = None
             st.session_state.editing_worker = None
@@ -304,7 +304,7 @@ with tab1:
                 margin=dict(l=0, r=0, t=10, b=0),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02)
             )
-            st.plotly_chart(fig_machine, use_container_width=True)
+            st.plotly_chart(fig_machine, width='stretch')
 
             st.markdown("""
             **Legend:**
@@ -346,7 +346,7 @@ with tab1:
                     showlegend=False,
                     coloraxis_showscale=False
                 )
-                st.plotly_chart(fig_backlog, use_container_width=True)
+                st.plotly_chart(fig_backlog, width='stretch')
         else:
             st.info("No tasks defined yet.")
 
@@ -372,7 +372,7 @@ with tab1:
             })
             st.dataframe(
                 df_tasks[['Task Name', 'Required Skills', 'Priority']],
-                use_container_width=True,
+                width='stretch',
                 hide_index=True,
                 column_config={
                     "Priority": st.column_config.ProgressColumn(
@@ -388,7 +388,7 @@ with tab1:
             st.info("No tasks have been added yet.")
 
     with col_add_task:
-        if st.button("➕ Add New Task", use_container_width=True):
+        if st.button("➕ Add New Task", width='stretch'):
             st.session_state.show_add_task_form = not st.session_state.show_add_task_form
 
         if st.session_state.show_add_task_form:
@@ -457,7 +457,7 @@ with tab2:
         fig_placeholder.update_yaxes(autorange="reversed")
         fig_placeholder.update_layout(height=250, margin=dict(l=0, r=0, t=40, b=0))
         fig_placeholder.update_traces(opacity=0.3)
-        st.plotly_chart(fig_placeholder, use_container_width=True)
+        st.plotly_chart(fig_placeholder, width='stretch')
 
     else:
         # Show scenario info
@@ -519,7 +519,7 @@ with tab2:
                 margin=dict(l=0, r=0, t=10, b=0),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02)
             )
-            st.plotly_chart(fig_schedule, use_container_width=True)
+            st.plotly_chart(fig_schedule, width='stretch')
 
             st.caption("💡 Hover over tasks to see details. Colors represent assigned workers.")
 
@@ -588,7 +588,7 @@ with tab2:
 
         st.dataframe(
             pd.DataFrame(assignments_data),
-            use_container_width=True,
+            width='stretch',
             hide_index=True,
             column_config={
                 "Priority": st.column_config.ProgressColumn(
@@ -651,7 +651,7 @@ with tab3:
                 "status": st.column_config.TextColumn("Status", width="small")
             },
             hide_index=True,
-            use_container_width=True
+            width='stretch'
         )
 
         st.markdown("---")
@@ -662,7 +662,7 @@ with tab3:
         with col_manage:
             st.markdown("##### 🔧 Manage Workers")
 
-            if st.button("➕ Add New Worker", use_container_width=True):
+            if st.button("➕ Add New Worker", width='stretch'):
                 st.session_state.show_add_worker_form = True
                 st.session_state.editing_worker = None
 
@@ -678,14 +678,14 @@ with tab3:
             if worker_to_edit:
                 col_edit, col_delete = st.columns(2)
                 with col_edit:
-                    if st.button("✏️ Edit", use_container_width=True):
+                    if st.button("✏️ Edit", width='stretch'):
                         worker_data = next((w for w in workers if w['name'] == worker_to_edit), None)
                         if worker_data:
                             st.session_state.editing_worker = worker_data
                             st.session_state.show_add_worker_form = True
                             st.rerun()
                 with col_delete:
-                    if st.button("🗑️ Delete", use_container_width=True, type="secondary"):
+                    if st.button("🗑️ Delete", width='stretch', type="secondary"):
                         delete_worker(worker_to_edit)
                         st.success(f"Deleted {worker_to_edit}")
                         time.sleep(1)
@@ -725,10 +725,10 @@ with tab3:
                             submitted = st.form_submit_button(
                                 "Update" if editing else "Add Worker",
                                 type="primary",
-                                use_container_width=True
+                                width='stretch'
                             )
                         with col_cancel:
-                            cancelled = st.form_submit_button("Cancel", use_container_width=True)
+                            cancelled = st.form_submit_button("Cancel", width='stretch')
 
                         if submitted:
                             if worker_name and selected_skills:
