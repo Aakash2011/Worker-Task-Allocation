@@ -66,7 +66,7 @@ def _load_in_memory_data():
     print("In-memory data loaded from files.")
 
 # REVERTED: add_task - no edit functionality for tasks
-def add_task(task_name: str, required_skills: List[str]):
+def add_task(task_name: str, required_skills: List[str], priority: int = 5):
     """Adds a new task to in-memory data and saves to file."""
     global _tasks
     # The check for uniqueness is now done in app.py before calling this function,
@@ -77,7 +77,7 @@ def add_task(task_name: str, required_skills: List[str]):
         # you might want to raise an error or return a status.
         # For now, we'll assume app.py handles the primary warning.
         return False # Indicate that task was not added due to duplicate
-    _tasks.append({"name": task_name, "required_skills": required_skills})
+    _tasks.append({"name": task_name, "required_skills": required_skills, "priority": priority})
     save_data(_tasks, TASKS_FILE)
     return True # Indicate success
 

@@ -1,22 +1,27 @@
 [
     {
         "name": "Fermentation Monitoring",
-        "required_skills": ["Chemistry", "Quality Control", "Data Analysis"]
+        "required_skills": ["Chemistry", "Quality Control", "Data Analysis"],
+        "priority": 9
     },
     {
         "name": "Bottling Line Setup",
-        "required_skills": ["Mechanical", "Automation", "Safety Procedures"]
+        "required_skills": ["Mechanical", "Automation", "Safety Procedures"],
+        "priority": 8
     },
     {
         "name": "Ingredient Procurement",
-        "required_skills": ["Supply Chain Management", "Negotiation", "Logistics"]
+        "required_skills": ["Supply Chain Management", "Negotiation", "Logistics"],
+        "priority": 7
     },
     {
         "name": "Brewing Kettle Operation",
-        "required_skills": ["Brewing", "Process Control"]
+        "required_skills": ["Brewing", "Process Control"],
+        "priority": 10
     },
     {
         "name": "Packaging Inspection",
-        "required_skills": ["Quality Control", "Attention to Detail"]
+        "required_skills": ["Quality Control", "Attention to Detail"],
+        "priority": 6
     }
 ]
